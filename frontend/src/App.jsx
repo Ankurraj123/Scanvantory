@@ -8,16 +8,32 @@ import Contact from './pages/Contact';
 import Profile from './pages/Profile'; // ✅ ADD THIS
 import './App.css';
 
+import ProtectedRoute from './components/ProtectedRoute'; // ✅ Import this
+
 function App() {
   return (
     <Router>
       <div className="min-h-screen">
         <Navigation />
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/profile" element={<Profile />} /> {/* ✅ ADD THIS */}
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
         </Routes>
