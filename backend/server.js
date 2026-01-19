@@ -49,9 +49,15 @@ mongoose
   .connect(MONGO_URI)
   .then(() => {
     console.log('✅ Connected to MongoDB');
-    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+    // Only listen if strict development or run directly
+    if (require.main === module) {
+      app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+    }
   })
   .catch((err) => {
     console.error('❌ MongoDB connection error:', err.message);
-    process.exit(1);
+    // Vercel might not like process.exit, but okay for dev
+    if (require.main === module) process.exit(1);
   });
+
+module.exports = app;
