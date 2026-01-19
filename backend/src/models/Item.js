@@ -2,7 +2,7 @@
 // Each item will have a unique SKU and a QR code that encodes the MongoDB _id
 
 const mongoose = require('mongoose');
-const QRCode = require('qrcode'); // npm install qrcode
+const QRCode = require('qrcode'); 
 
 const itemSchema = new mongoose.Schema(
   {
@@ -35,7 +35,6 @@ const itemSchema = new mongoose.Schema(
         `SKU-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
     },
     qrCode: {
-      // Store a data URL string of the generated QR code image
       type: String,
     },
     userId: {
@@ -49,16 +48,16 @@ const itemSchema = new mongoose.Schema(
   }
 );
 
-// Pre-save hook to generate QR code if not already set
+
 itemSchema.pre('save', async function () {
   if (!this.qrCode) {
     try {
-      // Encode either the _id or the SKU in the QR code
-      const qrData = this._id.toString(); // or use this.sku
+      
+      const qrData = this._id.toString(); 
       this.qrCode = await QRCode.toDataURL(qrData);
     } catch (err) {
       console.error('Error generating QR code:', err.message);
-      // Don’t call next(err) in async hooks — just throw
+  
       throw err;
     }
   }

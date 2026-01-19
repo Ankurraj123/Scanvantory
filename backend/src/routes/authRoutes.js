@@ -15,21 +15,21 @@ router.post('/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Validate required fields
+    
     if (!name || !email || !password) {
       return res.status(400).json({ success: false, message: 'All fields are required.' });
     }
 
-    // Check if user already exists
+
     const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
       return res.status(409).json({ success: false, message: 'Email already registered.' });
     }
 
-    // Hash password
+  
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new user
+    
     const user = new User({
       name,
       email: email.toLowerCase(),
@@ -38,7 +38,7 @@ router.post('/register', async (req, res) => {
 
     await user.save();
 
-    // Generate JWT token
+  
     const token = jwt.sign(
       { userId: user._id, email: user.email },
       JWT_SECRET,
@@ -67,12 +67,11 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Validate required fields
     if (!email || !password) {
       return res.status(400).json({ success: false, message: 'Email and password are required.' });
     }
 
-    // Find user by email
+
     const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
       return res.status(401).json({ success: false, message: 'Invalid email or password.' });

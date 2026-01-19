@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import QRCard from '../components/QRCard';
 import QRScanner from '../components/QRScanner';
 
-const API_BASE = 'http://localhost:5000/api';
+import API_BASE from '../config';
 
 // Simple helper to call backend with JWT token
 async function apiRequest(path, options = {}) {

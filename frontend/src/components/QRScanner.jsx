@@ -4,9 +4,6 @@ import { Scanner } from '@yudiel/react-qr-scanner';
 const QRScanner = ({ onScan, onError, onClose }) => {
     const handleScan = (result) => {
         if (result) {
-            // @yudiel/react-qr-scanner returns an array of objects in v2, or simple object
-            // v2: [{ rawValue: '...' }]
-            // Let's handle generic cases
             const val = result[0]?.rawValue || result?.text || result;
             if (val) onScan(val);
         }
