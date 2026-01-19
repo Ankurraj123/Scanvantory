@@ -45,19 +45,37 @@ app.use((err, req, res, next) => {
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/project2';
 const PORT = process.env.PORT || 5000;
 
-mongoose
-  .connect(MONGO_URI)
-  .then(() => {
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/project2';
+const PORT = process.env.PORT || 5000;
+
+// Database Connection Function
+let isConnected = false; // Track connection state
+
+const connectDB = async () => {
+  if (isConnected) {
+    return;
+  }
+
+  try {
+    const db = await mongoose.connect(MONGO_URI);
+    isConnected = db.connections[0].readyState;
     console.log('✅ Connected to MongoDB');
-    // Only listen if strict development or run directly
-    if (require.main === module) {
-      app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
-    }
-  })
-  .catch((err) => {
+  } catch (err) {
     console.error('❌ MongoDB connection error:', err.message);
-    // Vercel might not like process.exit, but okay for dev
-    if (require.main === module) process.exit(1);
+  }
+};
+
+// Middleware to ensure DB is connected before handling requests
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
+});
+
+// Only listen if strict development or run directly
+if (require.main === module) {
+  connectDB().then(() => {
+    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
   });
+}
 
 module.exports = app;
