@@ -56,7 +56,8 @@ router.post('/register', async (req, res) => {
       },
     });
   } catch (err) {
-    console.error('Error during registration:', err.message);
+    console.error('❌ Error during registration:', err.message);
+    console.error(err.stack);
     return res.status(500).json({ success: false, message: 'Server error during registration.' });
   }
 });
@@ -101,7 +102,8 @@ router.post('/login', async (req, res) => {
       },
     });
   } catch (err) {
-    console.error('Error during login:', err.message);
+    console.error('❌ Error during login:', err.message);
+    console.error(err.stack);
     return res.status(500).json({ success: false, message: 'Server error during login.' });
   }
 });

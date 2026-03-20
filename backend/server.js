@@ -54,11 +54,19 @@ const connectDB = async () => {
   }
 
   try {
+    // Basic diagnostic: show URI format (masked)
+    const maskedUri = MONGO_URI.replace(/\/\/.*@/, '//****:****@');
+    console.log(`📡 Attempting to connect to MongoDB: ${maskedUri}`);
+
     const db = await mongoose.connect(MONGO_URI);
     isConnected = db.connections[0].readyState;
     console.log('✅ Connected to MongoDB');
   } catch (err) {
     console.error('❌ MongoDB connection error:', err.message);
+    // Log full stack in production to help diagnose Vercel issues
+    if (process.env.NODE_ENV === 'production' || !process.env.NODE_ENV) {
+      console.error(err.stack);
+    }
   }
 };
 
