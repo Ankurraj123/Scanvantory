@@ -9,9 +9,9 @@ const User = require('../models/User');
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
-// POST /api/auth/register
+// POST /api/auth/signup
 // Create a new user account
-router.post('/register', async (req, res) => {
+router.post('/signup', async (req, res) => {
   try {
     const { name, email, password } = req.body;
 

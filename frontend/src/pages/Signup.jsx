@@ -29,8 +29,8 @@ function Signup() {
         setLoading(true);
 
         try {
-            // ✅ Updated route: /auth/register
-            const res = await fetch(`${API_BASE}/auth/register`, {
+            // ✅ Updated route: /auth/signup
+            const res = await fetch(`${API_BASE}/auth/signup`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
