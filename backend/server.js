@@ -21,9 +21,42 @@ const authRoutes = require('./src/routes/authRoutes');
 const contactRoutes = require('./src/routes/contactRoutes');
 
 
+// Database Connection Middleware (MUST be before routes)
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
+});
+
 app.use('/api/items', itemRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/contact', contactRoutes);
+
+// Test DB Endpoint
+app.get("/test-db", async (req, res) => {
+  try {
+    const mongoose = require("mongoose");
+    // Ensure we are connected
+    if (mongoose.connection.readyState !== 1) {
+      await connectDB();
+    }
+    
+    const admin = mongoose.connection.db.admin();
+    const result = await admin.ping();
+
+    res.json({
+      success: true,
+      message: "MongoDB Connected ✅",
+      result
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "MongoDB NOT connected ❌",
+      error: error.message,
+      stack: process.env.NODE_ENV === 'production' ? undefined : error.stack
+    });
+  }
+});
 
 
 app.get('/', (req, res) => {
@@ -81,11 +114,7 @@ const connectDB = async () => {
   }
 };
 
-// Middleware to ensure DB is connected before handling requests
-app.use(async (req, res, next) => {
-  await connectDB();
-  next();
-});
+// Database Connection Logic removed from here (it's handled above)
 
 // Only listen if strict development or run directly
 if (require.main === module) {
