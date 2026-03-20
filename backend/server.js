@@ -45,6 +45,17 @@ app.use((err, req, res, next) => {
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/project2';
 const PORT = process.env.PORT || 5000;
 
+// Production Check: MONGO_URI logic
+if (process.env.NODE_ENV === 'production' || !process.env.NODE_ENV) {
+  if (!process.env.MONGO_URI) {
+    console.error('❌ CRITICAL ERROR: MONGO_URI environment variable is MISSING!');
+    console.error('⚠️ The backend is currently using the DEFAULT localhost address, which will NOT work on Vercel.');
+    console.error('👉 ACTION REQUIRED: Add MONGO_URI to your Vercel Project Settings.');
+  } else if (process.env.MONGO_URI.includes('localhost')) {
+    console.warn('⚠️ WARNING: MONGO_URI is pointing to localhost in a production environment.');
+  }
+}
+
 // Database Connection Function
 let isConnected = false; // Track connection state
 
