@@ -72,8 +72,10 @@ function Dashboard() {
     };
 
     useEffect(() => {
-        loadItems();
-    }, []);
+        if (token) {
+            loadItems();
+        }
+    }, [token]);
 
     // Track quantities after loading items to detect low stock changes
     useEffect(() => {
@@ -454,31 +456,32 @@ function Dashboard() {
                         )}
                     </section>
 
-                    {/* Premium Items List */}
-                    <section className="space-y-4">
-                        <div className="flex items-center justify-between gap-2 mb-6">
-                            <div className="flex items-center gap-4">
-                                <div className="bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-600 rounded-2xl p-3 shadow-lg">
-                                    <span className="text-2xl">📦</span>
+                    {/* Premium Items List - Only for logged-in users */}
+                    {token ? (
+                        <section className="space-y-4">
+                            <div className="flex items-center justify-between gap-2 mb-6">
+                                <div className="flex items-center gap-4">
+                                    <div className="bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-600 rounded-2xl p-3 shadow-lg">
+                                        <span className="text-2xl">📦</span>
+                                    </div>
+                                    <div>
+                                        <h2 className="text-3xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Your Inventory</h2>
+                                        {filteredItems.length > 0 && (
+                                            <span className="inline-flex items-center bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 px-4 py-1 rounded-full text-xs font-bold mt-2 border border-blue-200">
+                                                {filteredItems.length} {filteredItems.length === 1 ? 'item' : 'items'} {searchQuery || locationFilter !== 'all' || quantityFilter !== 'all' ? 'found' : 'captured'}
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
-                                <div>
-                                    <h2 className="text-3xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Inventory Items</h2>
-                                    {filteredItems.length > 0 && (
-                                        <span className="inline-flex items-center bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 px-4 py-1 rounded-full text-xs font-bold mt-2 border border-blue-200">
-                                            {filteredItems.length} {filteredItems.length === 1 ? 'item' : 'items'} {searchQuery || locationFilter !== 'all' || quantityFilter !== 'all' ? 'found' : 'in stock'}
-                                        </span>
-                                    )}
-                                </div>
+                                <button
+                                    onClick={loadItems}
+                                    disabled={loading}
+                                    className="sm:hidden flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-xs font-medium text-slate-700 shadow-md hover:shadow-lg transition-all duration-200 border border-slate-200 disabled:opacity-50"
+                                >
+                                    <span className={loading ? 'animate-spin' : ''}>🔄</span>
+                                    {loading ? 'Loading...' : 'Refresh'}
+                                </button>
                             </div>
-                            <button
-                                onClick={loadItems}
-                                disabled={loading}
-                                className="sm:hidden flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-xs font-medium text-slate-700 shadow-md hover:shadow-lg transition-all duration-200 border border-slate-200 disabled:opacity-50"
-                            >
-                                <span className={loading ? 'animate-spin' : ''}>🔄</span>
-                                {loading ? 'Loading...' : 'Refresh'}
-                            </button>
-                        </div>
 
                         {/* Search and Filter Section */}
                         <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border-2 border-slate-200/50 mb-6">
@@ -720,6 +723,7 @@ function Dashboard() {
                             </div>
                         )}
                     </section>
+                    ) : null}
 
                     {/* Premium QR Scan Section */}
                     <section className="bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 rounded-3xl border-2 border-emerald-200/50 p-8 shadow-2xl backdrop-blur-sm">

@@ -8,8 +8,8 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-// Apply authentication middleware only to modification routes
-// router.use(authMiddleware); // Removed global application
+// Apply authentication middleware to all inventory routes
+router.use(authMiddleware);
 
 // Helper: generate QR code that encodes the item ID
 async function generateQrForItemId(itemId) {
@@ -53,12 +53,11 @@ router.post('/', authMiddleware, async (req, res) => {
 });
 
 // GET /api/items
-// Get all items (public or user-specific if logged in)
-router.get('/', async (req, res) => {
+// Get all items (user-specific)
+router.get('/', authMiddleware, async (req, res) => {
   try {
-    // If user is logged in (optional token), we could filter, 
-    // but for "Public Home Page", we return all items.
-    const items = await Item.find({}).sort({ createdAt: -1 });
+    // Only return items belonging to the authenticated user
+    const items = await Item.find({ userId: req.userId }).sort({ createdAt: -1 });
     return res.json(items);
   } catch (err) {
     console.error('Error fetching items:', err.message);
@@ -67,12 +66,13 @@ router.get('/', async (req, res) => {
 });
 
 // GET /api/items/:id
-// Get a single item by ID (Public)
-router.get('/:id', async (req, res) => {
+// Get a single item by ID (user-specific)
+router.get('/:id', authMiddleware, async (req, res) => {
   try {
-    const item = await Item.findOne({ _id: req.params.id });
+    // Ensure the item belongs to the user
+    const item = await Item.findOne({ _id: req.params.id, userId: req.userId });
     if (!item) {
-      return res.status(404).json({ message: 'Item not found.' });
+      return res.status(404).json({ message: 'Item not found or access denied.' });
     }
     return res.json(item);
   } catch (err) {
@@ -91,9 +91,10 @@ router.patch('/:id/quantity', authMiddleware, async (req, res) => {
       return res.status(400).json({ message: 'delta (number) is required.' });
     }
 
-    const item = await Item.findOne({ _id: req.params.id });
+    // Ensure the item belongs to the user
+    const item = await Item.findOne({ _id: req.params.id, userId: req.userId });
     if (!item) {
-      return res.status(404).json({ message: 'Item not found.' });
+      return res.status(404).json({ message: 'Item not found or access denied.' });
     }
 
     const newQuantity = item.quantity + delta;
